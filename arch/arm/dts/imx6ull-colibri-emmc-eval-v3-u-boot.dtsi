@@ -1,1 +1,1 @@
-imx6ull-colibri-eval-v3-u-boot.dtsi
+#include "imx6ull-colibri-eval-v3-u-boot.dtsi"
