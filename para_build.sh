@@ -13,11 +13,12 @@ source /opt/fsl-imx-x11/4.9.11-1.0.0/environment-setup-cortexa7hf-neon-poky-linu
 #!/bin/bash
 #编译前先清除
 make distclean
-make mx6ull_14x14_evk_defconfig
+make mx6ull_para_evk_defconfig
+# make mx6ull_14x14_evk_defconfig
 # make all -j16
 make u-boot.imx -j4
-mv u-boot.imx u-boot-imx6ull-14x14-ddr512-emmc.imx
-mv u-boot.bin u-boot-imx6ull-14x14-ddr512-emmc.bin
+mv u-boot.imx u-boot-imx6ull-para.imx
+mv u-boot.bin u-boot-imx6ull-para.bin
 #在当前目录下新建一个tmp目录，用于存放编译后的目标文件
 if [ ! -e "./tmp" ]; then
     mkdir tmp
@@ -26,4 +27,4 @@ rm -rf tmp/*
 #拷贝所有编译的U-boot.imx及U-boot.bin到当前的tmp目录下
 mv u-boot-imx6ull*.bin tmp
 mv u-boot-imx6ull*.imx tmp
-echo "编译完成，请查看当前目录下的tmp文件夹查看编译好的目标文件"
+echo "编译完成, 请查看当前目录下的tmp文件夹查看编译好的目标文件"

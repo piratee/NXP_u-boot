@@ -1033,6 +1033,7 @@ dtb-$(CONFIG_MX6UL) += \
 dtb-$(CONFIG_MX6ULL) += \
 	imx6ull-14x14-evk.dtb \
 	imx6ull-14x14-evk-emmc.dtb \
+	imx6ull-para-evk.dtb \
 	imx6ull-14x14-evk-gpmi-weim.dtb \
 	imx6ull-9x9-evk.dtb \
 	imx6ull-colibri-emmc-eval-v3.dtb \
