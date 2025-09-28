@@ -1,7 +1,16 @@
 #!/bin/bash
+
+set -e
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <u-boot.imx>"
+    exit 1
+fi
+
 # 定义变量
 DEVICE="/dev/sdb"
-IMAGE="tmp/u-boot-imx6ull-para.imx"
+# IMAGE="tmp/u-boot-imx6ull-para.imx"
+IMAGE=$1
 
 # 检查设备是否存在
 if [ -e "$DEVICE" ]; then
