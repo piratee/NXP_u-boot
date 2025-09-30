@@ -1,6 +1,6 @@
 #!/bin/bash
-# filepath: CST/extra_srk.sh
-# 用法: ./extra_srk.sh u-boot.imx-ivt_signed
+# filepath: para-script/extract_srk_hash.sh
+# 用法: ./extract_srk_hash.sh u-boot.imx-ivt_signed
 
 set -e
 
@@ -60,6 +60,7 @@ echo "SRK表魔数找到，文件偏移：0x$(printf "%08x" $SRK_MAGIC_OFFSET)"
 SRK_LENGTH_OFFSET=$((SRK_MAGIC_OFFSET + 1))
 SRK_LENGTH_HEX=$(od -An -tx2 -N 2 -j $SRK_LENGTH_OFFSET "$INPUT_FILE" | tr -d ' ')
 SRK_LENGTH=$((16#$SRK_LENGTH_HEX))
+# SRK_LENGTH=1024
 echo "SRK表长度：$SRK_LENGTH 字节"
 
 # 5. 提取SRK表内容
@@ -71,7 +72,39 @@ echo "SRK表已提取到 srk_table.bin"
 SRK_HASH=$(sha256sum srk_table.bin | awk '{print $1}')
 echo "SRK表HASH（SRK_HASH）: $SRK_HASH"
 
-# 7. 提取公钥并计算HASH（假设4个RSA2048公钥，每个256字节）
+echo "7. 验证SRK表内容与签名用SRK_1_2_3_4_table.bin内容是否一致"
+# 7. 验证SRK表内容与签名用SRK_1_2_3_4_table.bin内容是否一致
+CRT_DIR="$(dirname "$0")/../CST/crts"
+SRK_TABLE_FILE="$CRT_DIR/SRK_1_2_3_4_table.bin"
+SRK_FUSE_FILE="$CRT_DIR/SRK_1_2_3_4_fuse.bin"
+echo "SRK_TABLE_FILE: $SRK_TABLE_FILE"
+if [ -f "$SRK_TABLE_FILE" ]; then
+    cmp -s srk_table.bin "$SRK_TABLE_FILE"
+    
+    if [ $? -eq 0 ]; then
+        echo "✓ 镜像CSF区SRK表内容与签名用SRK_1_2_3_4_table.bin完全一致"
+    else
+        echo "✗ 镜像CSF区SRK表内容与签名用SRK_1_2_3_4_table.bin不一致"
+    fi
+else
+    echo "警告：未找到 $SRK_TABLE_FILE，无法比对"
+fi
+
+echo "8. 验证SRK_HASH与eFuse烧录的SRK_1_2_3_4_fuse.bin内容是否一致"
+# 8. 验证SRK_HASH与eFuse烧录的SRK_1_2_3_4_fuse.bin内容是否一致
+if [ -f "$SRK_FUSE_FILE" ]; then
+    FUSE_HASH=$(xxd -p "$SRK_FUSE_FILE" | tr -d '\n' | xxd -r -p | sha256sum | awk '{print $1}')
+    echo "eFuse中SRK_HASH: $FUSE_HASH"
+    if [ "$SRK_HASH" == "$FUSE_HASH" ]; then
+        echo "✓ SRK表HASH与eFuse中SRK_HASH一致，匹配！"
+    else
+        echo "✗ SRK表HASH与eFuse中SRK_HASH不一致，不匹配！"
+    fi
+else
+    echo "警告：未找到 $SRK_FUSE_FILE，无法比对efuse"
+fi
+
+# 9. 提取公钥并计算HASH（假设4个RSA2048公钥，每个256字节）
 PUBLIC_KEY_LEN=256
 PUBLIC_KEY_CNT=4
 echo "SRK表内各公钥HASH如下："
@@ -85,4 +118,4 @@ done
 echo "全部SRK公钥HASH计算完成。"
 
 # 清理临时文件
-rm -f pubkey_*.bin srk_table.bin
+rm -f pubkey_*.bin #srk_table.bin
