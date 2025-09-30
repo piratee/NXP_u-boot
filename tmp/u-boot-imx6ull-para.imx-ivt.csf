@@ -22,4 +22,4 @@ File = "./crts/IMG1_1_sha256_2048_65537_v3_usr_crt.pem"
 
 [Authenticate Data]
 Verification index = 2
-Blocks = 0x87800000 0x0000 0x92020 "../tmp/u-boot-imx6ull-para.imx-ivt"
+Blocks = 0x87800000   0x0000   0x92020   "../tmp/u-boot-imx6ull-para.imx-ivt"
