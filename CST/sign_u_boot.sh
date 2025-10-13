@@ -77,7 +77,7 @@ Verification index = 2
 Blocks = $LOADADDR   0x0000   $IMG_SIZE_HEX   "$IVT_IMAGE"
 EOF
 
-echo "生成CSF描述文件: done"
+echo "生成CSF描述文件: done: LOADADDR = $LOADADDR, IMG_SIZE_HEX = $IMG_SIZE_HEX, IVT_IMAGE = $IVT_IMAGE"
 # 3. 生成CSF二进制
 # ./linux64/bin/cst -i "$CSF_FILE" -o "${IVT_IMAGE}_csf.bin"
 "$CST_TOOL" -i "$CSF_FILE" -o "${IVT_IMAGE}_csf.bin"
