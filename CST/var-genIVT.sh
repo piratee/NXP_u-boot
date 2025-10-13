@@ -6,6 +6,8 @@ if ( $#ARGV+1 != 2 && $#ARGV+1 != 3 ) {
 	exit;
 }
 
+print "\n Start generate IVT !!!\n";
+
 my $loadaddr = hex(shift);
 my $img_size = hex(shift);
 
@@ -19,7 +21,7 @@ if ( $#ARGV+1 == 1 ) {
 my $ivt_addr = $loadaddr + $img_size;
 my $csf_addr = $ivt_addr + 0x20;
 
-print "\n ivt_addr: $ivt_addr \n csf_addr: $csf_addr\n\n";
+print "\n entry: $entry \n ivt_addr: $ivt_addr \n csf_addr: $csf_addr\n\n";
 
 open(my $out, '>:raw', 'ivt.bin') or die "Unable to open: $!";
 print $out pack("V", 0x412000D1); # IVT Header
@@ -30,4 +32,6 @@ print $out pack("V", 0x0); # Boot Data
 print $out pack("V", $ivt_addr); # Self Pointer
 print $out pack("V", $csf_addr); # CSF Pointer
 print $out pack("V", 0x0); # Reserved
+
+print "\n generate IVT done!!!\n";
 close($out);

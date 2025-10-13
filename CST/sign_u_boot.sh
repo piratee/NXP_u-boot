@@ -1,6 +1,6 @@
 #!/bin/bash
 # filepath: sign_u-boot_hab.sh
-# 用法: ./sign_u-boot_hab.sh u-boot-imx6ull-14x14-emmc.imx 0x87800000
+# 用法: ./sign_u-boot_hab.sh u-boot-imx6ull-14x14-emmc.imx 0x877ff420
 
 set -e
 
@@ -10,8 +10,8 @@ if [ $# -ne 2 ]; then
 fi
 
 IMAGE=$1
-LOADADDR=$2
-# LOADADDR=0x87800000
+# LOADADDR=$2
+LOADADDR=0x877ff420
 
 if [ ! -f "$IMAGE" ]; then
     echo "Error: $IMAGE not found!"
@@ -75,6 +75,7 @@ File = "$CRT_DIR/IMG1_1_sha256_2048_65537_v3_usr_crt.pem"
 [Authenticate Data]
 Verification index = 2
 Blocks = $LOADADDR   0x0000   $IMG_SIZE_HEX   "$IVT_IMAGE"
+# Blocks = 0x877ff400 0x00000000 0x00091c00 "../tmp/u-boot-dtb.imx"
 EOF
 
 echo "生成CSF描述文件: done: LOADADDR = $LOADADDR, IMG_SIZE_HEX = $IMG_SIZE_HEX, IVT_IMAGE = $IVT_IMAGE"

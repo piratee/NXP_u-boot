@@ -1,18 +1,19 @@
 #!/bin/bash
 # filepath: gen_u-boot_ivt.sh
 
-# 用法: ./gen_u-boot_ivt.sh u-boot-imx6ull-14x14-emmc.imx 0x87800000
+# 用法: ./gen_u-boot_ivt.sh u-boot-dtb.imx 0x877ff420
 
 set -e
 
 if [ $# -ne 2 ]; then
-    echo "Usage: $0 <u-boot-imx6ull-14x14-emmc.imx> <loadaddr>"
+    # echo "Usage: $0 <u-boot-dtb.imx> <loadaddr>"
+    echo "Usage: $0 <u-boot-dtb.imx>"
     exit 1
 fi
 
 IMAGE=$1
-# LOADADDR=$2
-LOADADDR=0x87800000
+LOADADDR=$2
+# LOADADDR=0x877ff420
 
 if [ ! -f "$IMAGE" ]; then
     echo "Error: $IMAGE not found!"
