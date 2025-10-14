@@ -1,7 +1,7 @@
 #!/bin/bash
 # filepath: secure_boot_20251013.sh
 # 用法: ./secure_boot_20251013.sh u-boot-dtb.imx 0x877ff420
-
+# these steps fellow NXP_u-boot/doc/imx/habv4/guides/mx6_mx7_secure_boot.txt
 set -e
 
 if [ $# -ne 1 ]; then
