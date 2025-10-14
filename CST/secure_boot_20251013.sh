@@ -86,4 +86,5 @@ echo "签名完成: ${IMAGE}-signed"
 
 FLUSH_IMAGE="${IMAGE}-signed"
 
+
 ../para-script/para-download-sd.sh $FLUSH_IMAGE
