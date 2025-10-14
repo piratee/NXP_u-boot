@@ -31,6 +31,7 @@ rm -rf tmp/*
 # mv u-boot-imx6ull*.bin tmp
 # mv u-boot-imx6ull*.imx tmp
 # mv u-boot-ivt.img tmp
-cp u-boot*.imx tmp
+cp u-boot-dtb.imx tmp
+cp u-boot-dtb.imx.log tmp
 # cp u-boot-ivt.img tmp
 echo "编译完成, 请查看当前目录下的tmp文件夹查看编译好的目标文件"

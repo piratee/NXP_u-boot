@@ -35,6 +35,29 @@ if [ ! -d "$CRT_DIR" ]; then
 fi
 
 # 1. 生成CSF描述文件
+if [ ! -f ${IMAGE}.log ]; then
+    echo "Error: ${IMAGE}.log not found!"
+fi
+
+HAB_BLOCKS=`grep 'HAB Blocks:' ${IMAGE}.log`
+RAM_AUTH_AREA_START=`awk '{print $3}' <<< ${HAB_BLOCKS}`
+IMG_SIGN_AREA_START=`awk '{print $4}' <<< ${HAB_BLOCKS}`
+IMG_SIGN_AREA_SIZE=`awk '{print $5}' <<< ${HAB_BLOCKS}`
+
+if [ -z "$RAM_AUTH_AREA_START" -o -z "$IMG_SIGN_AREA_START" -o -z "$IMG_SIGN_AREA_SIZE" ]; then
+    echo "Error: log file is corrupted"
+    shift
+    continue
+fi
+
+for arg in RAM_AUTH_AREA_START  IMG_SIGN_AREA_START  IMG_SIGN_AREA_SIZE; do
+    eval value=\$$arg
+    if [ ${value:0:2} != 0x ]; then
+        value=0x${value}
+        eval $arg=\$value
+    fi
+done
+
 CSF_FILE="${IMAGE}-csf"
 IMG_SIZE=$(wc -c < "$IMAGE")
 IMG_SIZE_HEX=$(printf "0x%x" $IMG_SIZE)
@@ -65,7 +88,8 @@ File = "$CRT_DIR/IMG1_1_sha256_2048_65537_v3_usr_crt.pem"
 [Authenticate Data]
 Verification index = 2
 # Blocks = $LOADADDR   0x0000   $IMG_SIZE_HEX   "$IVT_IMAGE"
-Blocks = 0x877ff400 0x00000000 0x00091c00 "../tmp/u-boot-dtb.imx"
+# Blocks = 0x877ff400 0x00000000 0x00091c00 "../tmp/u-boot-dtb.imx"
+Blocks = $RAM_AUTH_AREA_START   $IMG_SIGN_AREA_START   $IMG_SIGN_AREA_SIZE  "${IMAGE}"
 EOF
 
 echo "生成CSF描述文件: done: LOADADDR = $LOADADDR, IMG_SIZE_HEX = $IMG_SIZE_HEX"
