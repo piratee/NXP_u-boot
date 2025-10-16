@@ -95,6 +95,19 @@ echo "生成CSF描述文件."
 # ./linux64/bin/cst -i "$CSF_FILE" -o "${IVT_IMAGE}_csf.bin"
 "$CST_TOOL" -i "$CSF_FILE" -o "../tmp/csf_uboot.bin"
 echo "生成CSF二进制: done"
+
+# 4. pad the image
+# ``0x877ff400`` - IVT self address
+# ``0x877ff000`` - Program image address
+# ``0x94060`` - Program image size
+
+# To calculate the padding:
+
+# IVT offset = ``0x877ff400`` - ``0x877ff000`` = ``0x400``
+# Program image size = ``0x94060`` - ``0x400`` = ``0x93c60``
+
+#  objcopy -I binary -O binary --pad-to 0x93c60 --gap-fill=0x00 \
+#         ../tmp/u-boot-dtb.imx ../tmp/u-boot-dtb.imx.zero-padded
 # If keep IVT->CSF:
 # hab_status only raise 1 HAB Event below:
 # => hab_status
@@ -191,16 +204,17 @@ echo "生成CSF二进制: done"
 # ENG = HAB_ENG_ANY (0x00)
 # --------------------HAB Event log end---------------------------------------
 
-# cp ../tmp/u-boot-dtb.imx ../tmp/u-boot-dtb-new-CSF.imx
+# cp ../tmp/u-boot-dtb.imx.zero-padded ../tmp/u-boot-dtb-new-CSF.imx
+cp ../tmp/u-boot-dtb.imx ../tmp/u-boot-dtb-new-CSF.imx
 # 计算 CSF_POINTER
-# CSF_POINTER=$((ENTRY_POINT + IMG_SIGN_AREA_SIZE))
-# echo "CSF_POINTER = $ENTRY_POINT + $IMG_SIGN_AREA_SIZE = $CSF_POINTER"
+CSF_POINTER=$((ENTRY_POINT + IMG_SIGN_AREA_SIZE))
+echo "CSF_POINTER = $ENTRY_POINT + $IMG_SIGN_AREA_SIZE = $CSF_POINTER"
 # 将 CSF_POINTER 转换为4字节的小端序十六进制
-# CSF_BYTES=$(printf "%08x" $CSF_POINTER | sed 's/\(..\)\(..\)\(..\)\(..\)/\\x\4\\x\3\\x\2\\x\1/')
+CSF_BYTES=$(printf "%08x" $CSF_POINTER | sed 's/\(..\)\(..\)\(..\)\(..\)/\\x\4\\x\3\\x\2\\x\1/')
 # 写入CSF指针
-# printf "$CSF_BYTES" | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
-# printf '\x00\x1c\x89\x87' | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
-# echo "写入CSF指针: CSF_BYTES = $CSF_BYTES"
+printf "$CSF_BYTES" | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
+printf '\x00\x1c\x89\x87' | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
+echo "写入CSF指针: CSF_BYTES = $CSF_BYTES"
 
 # 4.2 change Boot_data->start,  Boot_data->length
 # boot data can,t modify, or uboot can not boot up 
@@ -232,12 +246,20 @@ echo "../tmp/u-boot-signed.imx: IMG_SIZE_new = $IMG_SIZE_new, IMG_SIZE_HEX_new =
 
 echo "Convert u-boot-dtb-new-CSF-signed.imx to u-boot-dtb-new-CSF-signed.hex"
 hexdump -C ../tmp/u-boot-dtb-new-CSF-signed.imx > ../tmp/u-boot-dtb-new-CSF-signed.hex
+echo "Convert u-boot-dtb.imx to u-boot-dtb.hex"
+hexdump -C ../tmp/u-boot-dtb.imx > ../tmp/u-boot-dtb.hex
 
-echo "copy csf.bin from signed image"
+echo "Copy csf.bin from signed image"
 dd if=../tmp/u-boot-dtb-new-CSF-signed.imx of=../tmp/csf_cat.bin bs=1 skip=$IMG_SIZE
-hexdump ../tmp/csf_cat.bin > ../tmp/csf_cat.hex
+hexdump -C ../tmp/csf_cat.bin > ../tmp/csf_cat.hex
 
+echo "Convert csf_uboot.bin to csf_uboot.hex"
+hexdump -C ../tmp/csf_uboot.bin > ../tmp/csf_uboot.hex
 
+echo "Compare csf_uboot.hex and csf_cat.hex "
+cmp -l ../tmp/csf_uboot.hex ../tmp/csf_cat.hex
+
+echo "Compare csf hex finished!!!!!!!!!"
 # 5. - Flash signed U-Boot binary:
 
 #   sudo dd if=u-boot-signed.imx of=/dev/sd<x> bs=1K seek=1 && sync
