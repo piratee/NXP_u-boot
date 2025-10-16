@@ -58,9 +58,7 @@ for arg in RAM_AUTH_AREA_START  IMG_SIGN_AREA_START  IMG_SIGN_AREA_SIZE; do
     fi
 done
 
-CSF_FILE="${IMAGE}-csf"
-IMG_SIZE=$(wc -c < "$IMAGE")
-IMG_SIZE_HEX=$(printf "0x%x" $IMG_SIZE)
+CSF_FILE="../tmp/csf_uboot.txt"
 
 cat > "$CSF_FILE" <<EOF
 [Header]
@@ -87,28 +85,48 @@ File = "$CRT_DIR/IMG1_1_sha256_2048_65537_v3_usr_crt.pem"
 
 [Authenticate Data]
 Verification index = 2
-# Blocks = $LOADADDR   0x0000   $IMG_SIZE_HEX   "$IVT_IMAGE"
 # Blocks = 0x877ff400 0x00000000 0x00091c00 "../tmp/u-boot-dtb.imx"
 Blocks = $RAM_AUTH_AREA_START   $IMG_SIGN_AREA_START   $IMG_SIGN_AREA_SIZE  "${IMAGE}"
 EOF
 
-echo "生成CSF描述文件: done: LOADADDR = $LOADADDR, IMG_SIZE_HEX = $IMG_SIZE_HEX"
+echo "生成CSF描述文件."
 # 3. 生成CSF二进制
 # ./linux64/bin/cst -i "$CSF_FILE" -o "${IVT_IMAGE}_csf.bin"
-"$CST_TOOL" -i "$CSF_FILE" -o "${IMAGE}-csf.bin"
+"$CST_TOOL" -i "$CSF_FILE" -o "../tmp/csf_uboot.bin"
 echo "生成CSF二进制: done"
 
-# 4. 合成最终签名镜像
-#  $ cat u-boot-dtb.imx csf_uboot.bin > u-boot-signed.imx
-cat "$IMAGE" "${IMAGE}-csf.bin" > "${IMAGE}-signed"
+# 4. check IVT->CSF and image real length
+cp ../tmp/u-boot-dtb.imx ../tmp/u-boot-dtb-new-CSF.imx
 
-echo "签名完成: ${IMAGE}-signed"
+printf '\x00\x1c\x89\x87' | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
+
+# 5. 合成最终签名镜像
+cat "../tmp/u-boot-dtb.imx" "../tmp/csf_uboot.bin" > "../tmp/u-boot-signed.imx"
+cat "../tmp/u-boot-dtb-new-CSF.imx" "../tmp/csf_uboot.bin" > "../tmp/u-boot-dtb-new-CSF-signed.imx"
+# cat "$IMAGE" "${IMAGE}-csf.bin" > "${IMAGE}-signed"
+
+echo "签名完成"
+
+IMG_SIZE=$(wc -c < "$IMAGE")
+IMG_SIZE_HEX=$(printf "0x%x" $IMG_SIZE)
+
+echo "$IMAGE: IMG_SIZE = $IMG_SIZE, IMG_SIZE_HEX = $IMG_SIZE_HEX"
+
+IMG_SIZE_new=$(wc -c < "../tmp/u-boot-signed.imx")
+IMG_SIZE_HEX_new=$(printf "0x%x" $IMG_SIZE_new)
+
+echo "../tmp/u-boot-signed.imx: IMG_SIZE_new = $IMG_SIZE_new, IMG_SIZE_HEX_new = $IMG_SIZE_HEX_new"
+
+echo "copy csf.bin from signed image"
+dd if=../tmp/u-boot-dtb-new-CSF-signed.imx of=../tmp/csf_cat.bin bs=1 skip=$IMG_SIZE
+hexdump ../tmp/csf_cat.bin > ../tmp/csf_cat.hex
+
 
 # 5. - Flash signed U-Boot binary:
 
 #   sudo dd if=u-boot-signed.imx of=/dev/sd<x> bs=1K seek=1 && sync
 
-FLUSH_IMAGE="${IMAGE}-signed"
+FLUSH_IMAGE="../tmp/u-boot-signed.imx"
 
 
 ../para-script/para-download-sd.sh $FLUSH_IMAGE
