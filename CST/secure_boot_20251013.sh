@@ -1,6 +1,6 @@
 #!/bin/bash
 # filepath: secure_boot_20251013.sh
-# 用法: ./secure_boot_20251013.sh u-boot-dtb.imx 0x877ff420
+# 用法: ./secure_boot_20251013.sh u-boot-dtb.imx 
 # these steps fellow NXP_u-boot/doc/imx/habv4/guides/mx6_mx7_secure_boot.txt
 set -e
 
@@ -10,8 +10,6 @@ if [ $# -ne 1 ]; then
 fi
 
 IMAGE=$1
-# LOADADDR=$2
-LOADADDR=0x877ff420
 
 if [ ! -f "$IMAGE" ]; then
     echo "Error: $IMAGE not found!"
@@ -39,6 +37,9 @@ if [ ! -f ${IMAGE}.log ]; then
     echo "Error: ${IMAGE}.log not found!"
 fi
 
+ENTRY_BLOCKS=`grep 'Entry Point:' ${IMAGE}.log`
+ENTRY_POINT=`awk '{print $3}' <<< ${ENTRY_BLOCKS}`
+
 HAB_BLOCKS=`grep 'HAB Blocks:' ${IMAGE}.log`
 RAM_AUTH_AREA_START=`awk '{print $3}' <<< ${HAB_BLOCKS}`
 IMG_SIGN_AREA_START=`awk '{print $4}' <<< ${HAB_BLOCKS}`
@@ -50,7 +51,7 @@ if [ -z "$RAM_AUTH_AREA_START" -o -z "$IMG_SIGN_AREA_START" -o -z "$IMG_SIGN_ARE
     continue
 fi
 
-for arg in RAM_AUTH_AREA_START  IMG_SIGN_AREA_START  IMG_SIGN_AREA_SIZE; do
+for arg in ENTRY_POINT RAM_AUTH_AREA_START  IMG_SIGN_AREA_START  IMG_SIGN_AREA_SIZE; do
     eval value=\$$arg
     if [ ${value:0:2} != 0x ]; then
         value=0x${value}
@@ -97,8 +98,15 @@ echo "生成CSF二进制: done"
 
 # 4. check IVT->CSF and image real length
 cp ../tmp/u-boot-dtb.imx ../tmp/u-boot-dtb-new-CSF.imx
-
-printf '\x00\x1c\x89\x87' | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
+# 计算 CSF_POINTER
+CSF_POINTER=$((ENTRY_POINT + IMG_SIGN_AREA_SIZE))
+echo "CSF_POINTER = $ENTRY_POINT + $IMG_SIGN_AREA_SIZE = $CSF_POINTER"
+# 将 CSF_POINTER 转换为4字节的小端序十六进制
+CSF_BYTES=$(printf "%08x" $CSF_POINTER | sed 's/\(..\)\(..\)\(..\)\(..\)/\\x\4\\x\3\\x\2\\x\1/')
+# 写入CSF指针
+printf "$CSF_BYTES" | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
+# printf '\x00\x1c\x89\x87' | dd of=../tmp/u-boot-dtb-new-CSF.imx bs=1 seek=$((0x18)) count=4 conv=notrunc
+echo "写入CSF指针: CSF_BYTES = $CSF_BYTES"
 
 # 5. 合成最终签名镜像
 cat "../tmp/u-boot-dtb.imx" "../tmp/csf_uboot.bin" > "../tmp/u-boot-signed.imx"
