@@ -1,0 +1,286 @@
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD4		HAB_TAG_CSF		Command Sequence File header
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x48		72 bytes		Length of Command Sequence File
+
+VER	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x42		HAB_MAJOR.HAB_MINOR	HAB VERSION
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xBE		HAB_CMD_INS_KEY		Install Key Command
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xC		12 bytes		Length of Insert Key Command
+
+FLG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		HAB_CMD_INS_KEY_NO_FLAG	No Flags set
+
+PCL	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x3		HAB_PCL_SRK		SRK Format
+
+ALG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x17		HAB_ALG_SHA256		SHA-256 Alg.
+
+SRC	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		SRK Index 0		Source Key Index of SRK
+
+TGT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		Key Index 0		Public Key Store Index
+
+KEY_DAT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x48		Start of SRK Table	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xBE		HAB_CMD_INS_KEY		Install Key Command
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xC		12 bytes		Length of Insert Key Command
+
+FLG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x2		HAB_CMD_INS_KEY_CSF	Install CSF Key
+
+PCL	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x9		HAB_PCL_X509		X.509v3 Cert Format
+
+ALG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		HAB_ALG_NO_ALG		No Hash Alg.
+
+VRF	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		Verification Index 0	SRK Verification Key Index
+
+TGT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x1		Key Index 1		Public Key Store Index
+
+KEY_DAT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x488		Certificate Data	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xCA		HAB_CMD_AUT_DAT		Authenticate Data Command
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xC		12 bytes		Length of Authenticate Data Command
+
+FLG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		HAB_CMD_AUT_DAT_NO_FLAG	No Flags set
+
+KEY	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x1		Verification Key Idx 1	Public Key Store Index
+
+PCL	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xC5		HAB_PCL_CMS		CMS/PKCS#7 Signature Format
+
+ENG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xFF		HAB_ENG_SW		Software Engine
+
+ENG_CFG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		BITWISE OR   		Bitwise OR of Engine confs as below
+
+   	0x0		HAB_SW_CONF_DEFAULT	Engine Configuration SW Default
+
+SIG_LOC	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x7DC		Authentication Data	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xBE		HAB_CMD_INS_KEY		Install Key Command
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xC		12 bytes		Length of Insert Key Command
+
+FLG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		HAB_CMD_INS_KEY_NO_FLAG	No Flags set
+
+PCL	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x9		HAB_PCL_X509		X.509v3 Cert Format
+
+ALG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		HAB_ALG_NO_ALG		No Hash Alg.
+
+VRF	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		Verification Index 0	SRK Verification Key Index
+
+TGT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x2		Key Index 2		Public Key Store Index
+
+KEY_DAT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x9E0		Certificate Data	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xCA		HAB_CMD_AUT_DAT		Authenticate Data Command
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x14		20 bytes		Length of Authenticate Data Command
+
+FLG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		HAB_CMD_AUT_DAT_NO_FLAG	No Flags set
+
+KEY	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x2		Verification Key Idx 2	Public Key Store Index
+
+PCL	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xC5		HAB_PCL_CMS		CMS/PKCS#7 Signature Format
+
+ENG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xFF		HAB_ENG_SW		Software Engine
+
+ENG_CFG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x0		BITWISE OR   		Bitwise OR of Engine confs as below
+
+   	0x0		HAB_SW_CONF_DEFAULT	Engine Configuration SW Default
+
+SIG_LOC	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD34		Authentication Data	Relative to start of CSF
+
+BLK_SRT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x877FF400	Address of Region 0	Address of Region 0 to verify
+
+BLK_LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x91C00		Size of Region 0	Size of Region 0 to verify
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD7		HAB_TAG_CSF		Certificate
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x440		1088 bytes		Length of Certificate
+
+VER	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x40		HAB_MAJOR.HAB_MINOR	HAB VERSION
+
+CERT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x4C		Certificate Offset	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD7		HAB_TAG_CSF		Certificate
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x354		852 bytes		Length of Certificate
+
+VER	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x42		HAB_MAJOR.HAB_MINOR	HAB VERSION
+
+CERT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x48C		Certificate Offset	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD8		HAB_TAG_SIG		Signature
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x201		513 bytes		Length of Signature
+
+VER	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x42		HAB_MAJOR.HAB_MINOR	HAB VERSION
+
+SIG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x7E0		Signature Offset	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD7		HAB_TAG_CSF		Certificate
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x354		852 bytes		Length of Certificate
+
+VER	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x42		HAB_MAJOR.HAB_MINOR	HAB VERSION
+
+CERT	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x9E4		Certificate Offset	Relative to start of CSF
+
+
+
+TAG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD8		HAB_TAG_SIG		Signature
+
+LEN	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x201		513 bytes		Length of Signature
+
+VER	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0x42		HAB_MAJOR.HAB_MINOR	HAB VERSION
+
+SIG	VALUE		DEFINITION		DESCRIPTION
+----------------------------------------------------------------------
+   	0xD38		Signature Offset	Relative to start of CSF
+

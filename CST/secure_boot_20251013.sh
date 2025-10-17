@@ -59,7 +59,7 @@ for arg in ENTRY_POINT RAM_AUTH_AREA_START  IMG_SIGN_AREA_START  IMG_SIGN_AREA_S
     fi
 done
 
-CSF_FILE="../tmp/csf_uboot.txt"
+CSF_FILE="${SCRIPT_DIR}/csf_uboot.txt"
 
 cat > "$CSF_FILE" <<EOF
 [Header]
@@ -93,7 +93,7 @@ EOF
 echo "生成CSF描述文件."
 # 3. 生成CSF二进制
 # ./linux64/bin/cst -i "$CSF_FILE" -o "${IVT_IMAGE}_csf.bin"
-"$CST_TOOL" -i "$CSF_FILE" -o "../tmp/csf_uboot.bin"
+"$CST_TOOL" -i "$CSF_FILE" -o "${SCRIPT_DIR}/csf_uboot.bin"
 echo "生成CSF二进制: done"
 
 # 4. pad the image
@@ -228,8 +228,8 @@ echo "写入CSF指针: CSF_BYTES = $CSF_BYTES"
 # echo "Boot data start: $BOOT_DATA_START_BYTES, length: $BOOT_DATA_LENGTH_BYTES"
 
 # 5. 合成最终签名镜像
-cat "../tmp/u-boot-dtb.imx" "../tmp/csf_uboot.bin" > "../tmp/u-boot-signed.imx"
-cat "../tmp/u-boot-dtb-new-CSF.imx" "../tmp/csf_uboot.bin" > "../tmp/u-boot-dtb-new-CSF-signed.imx"
+cat "../tmp/u-boot-dtb.imx" "${SCRIPT_DIR}/csf_uboot.bin" > "../tmp/u-boot-signed.imx"
+cat "../tmp/u-boot-dtb-new-CSF.imx" "${SCRIPT_DIR}/csf_uboot.bin" > "../tmp/u-boot-dtb-new-CSF-signed.imx"
 # cat "$IMAGE" "${IMAGE}-csf.bin" > "${IMAGE}-signed"
 
 echo "签名完成"
@@ -246,15 +246,15 @@ echo "../tmp/u-boot-signed.imx: IMG_SIZE_new = $IMG_SIZE_new, IMG_SIZE_HEX_new =
 
 echo "Convert u-boot-dtb-new-CSF-signed.imx to u-boot-dtb-new-CSF-signed.hex"
 hexdump -C ../tmp/u-boot-dtb-new-CSF-signed.imx > ../tmp/u-boot-dtb-new-CSF-signed.hex
-echo "Convert u-boot-dtb.imx to u-boot-dtb.hex"
-hexdump -C ../tmp/u-boot-dtb.imx > ../tmp/u-boot-dtb.hex
+echo "Convert u-boot-signed.imx to u-boot-signed.hex"
+hexdump -C ../tmp/u-boot-signed.imx > ../tmp/u-boot-signed.hex
 
 echo "Copy csf.bin from signed image"
 dd if=../tmp/u-boot-dtb-new-CSF-signed.imx of=../tmp/csf_cat.bin bs=1 skip=$IMG_SIZE
 hexdump -C ../tmp/csf_cat.bin > ../tmp/csf_cat.hex
 
 echo "Convert csf_uboot.bin to csf_uboot.hex"
-hexdump -C ../tmp/csf_uboot.bin > ../tmp/csf_uboot.hex
+hexdump -C ${SCRIPT_DIR}/csf_uboot.bin > ../tmp/csf_uboot.hex
 
 echo "Compare csf_uboot.hex and csf_cat.hex "
 cmp -l ../tmp/csf_uboot.hex ../tmp/csf_cat.hex
@@ -264,7 +264,7 @@ echo "Compare csf hex finished!!!!!!!!!"
 
 #   sudo dd if=u-boot-signed.imx of=/dev/sd<x> bs=1K seek=1 && sync
 
-FLUSH_IMAGE="../tmp/u-boot-signed.imx"
+FLUSH_IMAGE="../tmp/u-boot-dtb-new-CSF-signed.imx"
 
 
 ../para-script/para-download-sd.sh $FLUSH_IMAGE

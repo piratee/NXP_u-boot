@@ -1,0 +1,12 @@
+
+IVT : HEADER    = 0x402000D1
+      START     = 0x87800000
+      RES1      = 0x00000000
+      DCD       = 0x877FF42C
+      BOOT DATA = 0x877FF420
+      SELF      = 0x877FF400
+      CSF       = 0x87891000
+      RES2      = 0x00000000
+
+IVT found at offset = 0x00000000
+
