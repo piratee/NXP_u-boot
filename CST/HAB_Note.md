@@ -267,7 +267,7 @@ The intruction [mx6_mx7_secure_boot.txt](u-boot/doc/imx/habv4/guides/mx6_mx7_sec
 
 ## 5.4 verify csf signature
 
-In step **### 4.1.5 CSF**, CSF offset is 0x91c00. To verify the csf signature in u-boot-signed.imx, we should use the following steps:  
+In step **4.1.5 CSF**, CSF offset is 0x91c00. To verify the csf signature in u-boot-signed.imx, we should use the following steps:  
 
 ### 5.4.1 Compare csf signature with csf.bin and u-boot-signed.imx
 
@@ -314,9 +314,11 @@ If the output is empty, it means the two files are identical.
 
 [csf_parser_u_boot_signed.png](../para-script/csf_parser_u_boot_signed.png)
 
-### 5.4.3 Analyze the csf_uboot.hex
+### 5.4.3 Analyze the csf signature
 
-TODO
+CSF signature is described in file **High Assurance Boot Version 4 Application Programming Interface Reference Manual**.
+You can analyze the csf_uboot.hex to understand the csf signature.
+Otherwise, csf_parse command will also generate [parsed_output.txt](./output/parsed_output.txt) and [debug_log.txt](./output/debug_log.txt) to describe the csf signature in u-boot-signed.imx or csf_uboot.bin.
 
 ## 5.6 Fuse programming
 
